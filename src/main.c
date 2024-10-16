@@ -43,12 +43,22 @@ int main(int argc, char *argv[]) {
         }
     }
 
+
     for (int i = 0; i < island_count; i++) {
-        for (int j = i + 1; j < island_count; j++) {
-            Result result = dijkstra(bridges, bridge_count, islands, island_count, islands[i], islands[j]);
-    		print_data_island(result);
+    	for (int j = i + 1; j < island_count; j++) {
+        	// Переменная для хранения количества путей, возвращаемого dijkstra
+        	int path_count = 0;
+
+        	// Вызов функции для поиска всех кратчайших путей
+        	Result *results = dijkstra(bridges, bridge_count, islands, island_count, islands[i], islands[j], &path_count);
+
+        	// Обработка и вывод каждого найденного пути
+        	for (int k = 0; k < path_count; k++) {
+       		    print_data_island(results[k]);  // Функция для вывода пути
+       	 	}
         }
-    }
+	}
+
 
     // Освобождение памяти для islands
     for (int i = 0; i < island_count; i++) {
@@ -62,4 +72,5 @@ int main(int argc, char *argv[]) {
     }
     free(bridges);
     return 0;
+
 }
