@@ -1,51 +1,41 @@
 #include "../inc/pathfinder.h"
 
-void print_data_island(Result result) {
-    if (result.result != -1) {
-        // Начало блока вывода
+void print_data_island(Result island) {
+    if (island.result != -1) {
         printf("========================================\n");
-
-        // Вывод пути (Path)
-        printf("Path: %s -> %s\n", result.visited[result.visited_count - 1], result.visited[0]);
-
-        // Вывод маршрута (Route)
+        printf("Path: %s -> %s\n", island.visited[island.visited_count - 1], island.visited[0]);
         printf("Route: ");
-        for (int i = result.visited_count - 1; i >= 0; i--) {
-            printf("%s", result.visited[i]);
-            if (i > 0) {
+        for (int i = 0; i < island.visited_count; i++) {  // Проходим по пути в прямом порядке
+            printf("%s", island.visited[i]);
+            if (i < island.visited_count - 1) {
                 printf(" -> ");
             }
         }
         printf("\n");
-
-        // Вывод расстояний (Distance)
         printf("Distance: ");
-        if (result.distance_count == 1) {
-            // Если расстояние одно
-            printf("%d\n", result.distances[0]);
+        if (island.distance_count == 1) {
+            printf("%d\n", island.distances[0]);
         } else {
-            // Если расстояний несколько, выводим с символом "+" и итоговой суммой
             int total_distance = 0;
-            for (int i = result.distance_count - 1; i >= 0; i--) {
-                printf("%d", result.distances[i]);
-                total_distance += result.distances[i];
-                if (i > 0) {
+            for (int i = 0; i < island.distance_count; i++) {  // Считаем расстояния в прямом порядке
+                printf("%d", island.distances[i]);
+                total_distance += island.distances[i];
+                if (i < island.distance_count - 1) {
                     printf(" + ");
                 }
             }
             printf(" = %d\n", total_distance);
         }
 
-        // Конец блока вывода
         printf("========================================\n");
     } else {
         printf("No path found.\n");
     }
 
     // Освобождение памяти
-    for (int i = 0; i < result.visited_count; i++) {
-        free(result.visited[i]);  // Освобождаем каждую строку в массиве visited
+    for (int i = 0; i < island.visited_count; i++) {
+        free(island.visited[i]);
     }
-    free(result.visited);  // Освобождаем сам массив указателей на строки
-    free(result.distances); // Освобождаем массив расстояний
+    free(island.visited);
+    free(island.distances);
 }

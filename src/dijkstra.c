@@ -1,8 +1,5 @@
 #include "../inc/pathfinder.h"
 
-// Максимальное количество путей, которое будем обрабатывать (для примера)
-
-// Функция для поиска индекса острова в массиве островов
 int get_island_index(char *island, char *islands[], int island_count) {
     for (int i = 0; i < island_count; i++) {
         if (mx_strcmp(islands[i], island) == 0) {
@@ -12,57 +9,17 @@ int get_island_index(char *island, char *islands[], int island_count) {
     return -1;  // Остров не найден
 }
 
-// Восстановление пути на основе массива previous
-void restore_path(int *previous, int start_index, int end_index, int *path, int *path_len) {
-    int current = end_index;
-    while (current != start_index && current != -1) {
-        path[(*path_len)++] = current;
-        current = previous[current];
-    }
-    path[(*path_len)++] = start_index;
-}
+void dijkstra(Bridge *bridges, int bridge_count, char *islands[], int island_count, int start_index, int *distances) {
+    bool *visited = (bool *)malloc(island_count * sizeof(bool));
 
-// Алгоритм Дейкстры для поиска всех кратчайших путей между двумя островами
-Result* dijkstra(Bridge *bridges, int bridge_count, char *islands[], int island_count, char *start, char *end, int *path_count) {
-    // Выделяем память для массивов расстояний, посещённых островов и предыдущих вершин
-    int *distances = (int *)malloc(island_count * sizeof(int));  // Кратчайшие расстояния
-    bool *visited = (bool *)malloc(island_count * sizeof(bool));  // Флаг посещения вершин
-    int *previous = (int *)malloc(island_count * sizeof(int));  // Для восстановления пути
-
-    // Проверка на успешное выделение памяти
-    if (!distances || !visited || !previous) {
-        printf("Memory allocation error!\n");
-        exit(1);
-    }
-
-    // Инициализация массивов
     for (int i = 0; i < island_count; i++) {
-        distances[i] = INFINITY;  // Все расстояния — бесконечность
-        visited[i] = false;       // Все вершины непосещённые
-        previous[i] = -1;         // Нет предыдущих вершин
+        distances[i] = INT_MAX;
+        visited[i] = false;
     }
+    distances[start_index] = 0;
 
-    // Находим индексы стартовой и конечной точки
-    int start_index = get_island_index(start, islands, island_count);
-    int end_index = get_island_index(end, islands, island_count);
-    if (start_index == -1 || end_index == -1) {
-        *path_count = 0;
-        free(distances);
-        free(visited);
-        free(previous);
-        return NULL;  // Возвращаем пустой результат, если одна из точек не найдена
-    }
-
-    distances[start_index] = 0;  // Начальная точка получает расстояние 0
-
-    // Массив для хранения нескольких путей
-    Result* results = (Result *)malloc(MAX_PATHS * sizeof(Result));
-    *path_count = 0;
-
-    // Основной цикл алгоритма Дейкстры
     while (true) {
-        // Находим непосещённую вершину с минимальным расстоянием
-        int min_distance = INFINITY;
+        int min_distance = INT_MAX;
         int current = -1;
         for (int i = 0; i < island_count; i++) {
             if (!visited[i] && distances[i] < min_distance) {
@@ -70,82 +27,81 @@ Result* dijkstra(Bridge *bridges, int bridge_count, char *islands[], int island_
                 current = i;
             }
         }
-
-        // Если не найдено доступных вершин, завершить алгоритм
-        if (current == -1) break;
-
-        // Отмечаем текущую вершину как посещённую
+        if (current == -1)
+            break;
         visited[current] = true;
 
-        // Если достигли конечного острова, сохраняем путь
-        if (current == end_index) {
-            // Восстановление пути
-            int *path = (int *)malloc(island_count * sizeof(int));  // Массив для хранения индексов пути
-            int path_len = 0;
-            restore_path(previous, start_index, end_index, path, &path_len);
-
-            // Заполняем структуру Result
-            Result res;
-            res.distances = (int *)malloc((path_len - 1) * sizeof(int));  // Для хранения расстояний между островами
-            res.visited = (char **)malloc(path_len * sizeof(char *));     // Для хранения посещённых островов
-
-            // Заполняем массивы visited и distances
-            res.visited_count = path_len;
-            res.distance_count = path_len - 1;
-            res.result = distances[end_index];
-
-            for (int i = 0; i < path_len; i++) {
-                res.visited[i] = mx_strdup(islands[path[i]]);
-                if (i > 0) {
-                    // Находим расстояние между соседними островами на пути
-                    for (int j = 0; j < bridge_count; j++) {
-                        if ((mx_strcmp(islands[path[i - 1]], bridges[j].island1) == 0 &&
-                             mx_strcmp(islands[path[i]], bridges[j].island2) == 0) ||
-                            (mx_strcmp(islands[path[i - 1]], bridges[j].island2) == 0 &&
-                             mx_strcmp(islands[path[i]], bridges[j].island1) == 0)) {
-                            res.distances[i - 1] = bridges[j].distance;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // Сохраняем путь в массив results
-            if (*path_count < MAX_PATHS) {
-                results[*path_count] = res;
-                (*path_count)++;
-            }
-
-            free(path);  // Освобождаем временный путь
-        }
-
-        // Обновляем расстояния до соседей текущей вершины
-        for (int j = 0; j < bridge_count; j++) {
+        // Обновляем расстояния до соседей
+        for (int i = 0; i < bridge_count; i++) {
             int neighbor = -1;
-            if (mx_strcmp(islands[current], bridges[j].island1) == 0) {
-                neighbor = get_island_index(bridges[j].island2, islands, island_count);
-            } else if (mx_strcmp(islands[current], bridges[j].island2) == 0) {
-                neighbor = get_island_index(bridges[j].island1, islands, island_count);
+            if (current == get_island_index(bridges[i].island1, islands, island_count)) {
+                neighbor = get_island_index(bridges[i].island2, islands, island_count);
+            } else if (current == get_island_index(bridges[i].island2, islands, island_count)) {
+                neighbor = get_island_index(bridges[i].island1, islands, island_count);
             }
-
-            // Если сосед существует и не посещён
-            if (neighbor != -1 && !visited[neighbor]) {
-                int new_distance = distances[current] + bridges[j].distance;
+            if (neighbor != -1) {
+                int new_distance = distances[current] + bridges[i].distance;
                 if (new_distance < distances[neighbor]) {
                     distances[neighbor] = new_distance;
-                    previous[neighbor] = current;  // Обновляем предыдущую вершину
-                } else if (new_distance == distances[neighbor]) {
-                    // Если найден путь с такой же длиной, сохраняем его
-                    previous[neighbor] = current;
                 }
             }
         }
     }
-
-    // Освобождаем выделенную память
-    free(distances);
     free(visited);
-    free(previous);
+}
 
-    return results;  // Возвращаем массив результатов
+void find_paths(int current, int end_index, Bridge *bridges, int bridge_count, int island_count, int *distances, int *temp_path, int path_len, AllPaths *all_paths, char *islands[]) {
+    temp_path[path_len++] = current;
+    if (current == end_index) {
+        // Копируем путь в all_paths
+        Path new_path;
+        new_path.length = path_len;
+        new_path.path = (int *)malloc(path_len * sizeof(int));
+        for (int i = 0; i < path_len; i++) {
+            new_path.path[i] = temp_path[i];
+        }
+        if (all_paths->count < MAX_PATHS) {
+            all_paths->paths[all_paths->count++] = new_path;
+        } else {
+            free(new_path.path);
+            return;
+        }
+    } else {
+        // Идем по всем соседям
+        for (int i = 0; i < bridge_count; i++) {
+            int neighbor = -1;
+            int edge_weight = bridges[i].distance;
+            if (current == get_island_index(bridges[i].island1, islands, island_count)) {
+                neighbor = get_island_index(bridges[i].island2, islands, island_count);
+            } else if (current == get_island_index(bridges[i].island2, islands, island_count)) {
+                neighbor = get_island_index(bridges[i].island1, islands, island_count);
+            }
+            if (neighbor != -1) {
+                if (distances[current] + edge_weight == distances[neighbor]) {
+                    find_paths(neighbor, end_index, bridges, bridge_count, island_count, distances, temp_path, path_len, all_paths, islands);
+                }
+            }
+        }
+    }
+    path_len--;
+}
+
+AllPaths get_all_shortest_paths(Bridge *bridges, int bridge_count, char *islands[], int island_count, char *start, char *end) {
+    int start_index = get_island_index(start, islands, island_count);
+    int end_index = get_island_index(end, islands, island_count);
+
+    AllPaths all_paths;
+    all_paths.count = 0;
+    all_paths.paths = (Path *)malloc(MAX_PATHS * sizeof(Path));
+
+    int *distances = (int *)malloc(island_count * sizeof(int));
+    dijkstra(bridges, bridge_count, islands, island_count, start_index, distances);
+
+    int *temp_path = (int *)malloc(island_count * sizeof(int));
+    find_paths(start_index, end_index, bridges, bridge_count, island_count, distances, temp_path, 0, &all_paths, islands);
+
+    free(distances);
+    free(temp_path);
+
+    return all_paths;
 }

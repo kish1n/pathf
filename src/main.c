@@ -15,12 +15,12 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    int bridge_count = mx_read_bridge_count(argv[1]);
-    Bridge *bridges = mx_read_bridges(argv[1], &bridge_count);
-    int island_count = mx_island_count(argv[1]);
+    int bridge_count = get_bridge_count(argv[1]);
+    Bridge *bridges = get_bridges(argv[1], &bridge_count);
+    int island_count = get_island_count(argv[1]);
 
     char *islands[island_count];
-	int current_island_count = 0;  // Счётчик для добавления уникальных островов
+    int current_island_count = 0;
 
     for (int i = 0; i < bridge_count; i++) {
         if (is_island_unique(bridges[i].island1, islands, current_island_count)) {
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-	for (int i = 0; i < island_count; i++) {
+    for (int i = 0; i < island_count; i++) {
         for (int j = i + 1; j < island_count; j++) {
             if (mx_strcmp(islands[i], islands[j]) > 0) {
                 char *temp = islands[i];
@@ -43,26 +43,35 @@ int main(int argc, char *argv[]) {
         }
     }
 
-
+    // Находим кратчайшие пути между всеми парами островов
     for (int i = 0; i < island_count; i++) {
-    	for (int j = i + 1; j < island_count; j++) {
-        	// Переменная для хранения количества путей, возвращаемого dijkstra
-        	int path_count = 0;
+        for (int j = i + 1; j < island_count; j++) {
+            AllPaths all_paths = get_all_shortest_paths(bridges, bridge_count, islands, island_count, islands[i], islands[j]);
 
-        	// Вызов функции для поиска всех кратчайших путей
-        	Result *results = dijkstra(bridges, bridge_count, islands, island_count, islands[i], islands[j], &path_count);
+            // Вывод результатов
+            for (int k = 0; k < all_paths.count; k++) {
+                mx_printstr("Path ");
+                mx_printint(k + 1);
+                mx_printstr(": ");
+                for (int l = 0; l < all_paths.paths[k].length; l++) {
+                    mx_printstr(islands[all_paths.paths[k].path[l]]);
+                    if (l < all_paths.paths[k].length - 1)
+                        mx_printstr(" -> ");
+                }
+                mx_printchar('\n');
+            }
 
-        	// Обработка и вывод каждого найденного пути
-        	for (int k = 0; k < path_count; k++) {
-       		    print_data_island(results[k]);  // Функция для вывода пути
-       	 	}
+            // Освобождение памяти
+            for (int k = 0; k < all_paths.count; k++) {
+                free(all_paths.paths[k].path);
+            }
+            free(all_paths.paths);
         }
-	}
-
+    }
 
     // Освобождение памяти для islands
     for (int i = 0; i < island_count; i++) {
-    free(islands[i]);  // Освобождаем каждую строку в массиве islands
+        free(islands[i]);  // Освобождаем каждую строку в массиве islands
     }
 
     // Освобождение памяти для мостов bridges
@@ -71,6 +80,46 @@ int main(int argc, char *argv[]) {
         free(bridges[i].island2);  // Освобождаем память для island2
     }
     free(bridges);
-    return 0;
 
+    return 0;
 }
+
+
+// int main(void) {
+//     // Пример данных
+//     int bridge_count = 6;
+//     Bridge bridges[6] = {
+//         {"A", "B", 11},
+//         {"A", "C", 10},
+//         {"B", "D", 5},
+//         {"C", "D", 6},
+//         {"C", "E", 15},
+//         {"D", "E", 4}
+//     };
+//
+//     char *islands[] = {"A", "B", "C", "D", "E"};
+//     int island_count = 5;
+//
+//     AllPaths all_paths = get_all_shortest_paths(bridges, bridge_count, islands, island_count, "A", "E");
+//
+//     // Вывод результатов
+//     for (int i = 0; i < all_paths.count; i++) {
+//         printf("Path %d: ", i + 1);
+//         for (int j = 0; j < all_paths.paths[i].length; j++) {
+//             printf("%s", islands[all_paths.paths[i].path[j]]);
+//             if (j < all_paths.paths[i].length - 1)
+//                 printf(" -> ");
+//         }
+//         printf("\n");
+//     }
+//
+//     // Освобождение памяти
+//     for (int i = 0; i < all_paths.count; i++) {
+//         free(all_paths.paths[i].path);
+//     }
+//     free(all_paths.paths);
+//
+//     return 0;
+// }
+//
+//
