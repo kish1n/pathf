@@ -3,14 +3,14 @@
 int get_island_count(const char *filename) {
     int fd = open(filename, O_RDONLY);
     if (fd == -1) {
-        write(2, "Error: cannot open file\n", 24);
+        write(2, "error: file [%s] does not exist \n", 24);
         exit(1);
     }
 
     char buffer[256];
     int bytes_read = read(fd, buffer, 255);
     if (bytes_read <= 0) {
-        write(2, "Error: cannot read file\n", 24);
+        write(2, "error: file [%s] is empty\n", 32);
         close(fd);
         exit(1);
     }
@@ -23,7 +23,7 @@ int get_island_count(const char *filename) {
         if (buffer[i] >= '0' && buffer[i] <= '9') {
             number = number * 10 + (buffer[i] - '0');
         } else {
-            write(2, "Error: invalid number format\n", 29);
+            write(2, "error: line 1 is not valid\n", 29);
             exit(1);
         }
     }
