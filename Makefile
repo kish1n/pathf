@@ -8,6 +8,7 @@ LIBMX_SRC_DIR = ./libmx/src
 INC_DIR = ./inc
 LIBMX_INC_DIR = ./libmx/inc
 OBJ_DIR = ./obj
+LIBMX_OBJ_DIR = $(OBJ_DIR)/libmx
 
 # Название библиотеки и программы
 LIB_NAME = libmx.a
@@ -17,7 +18,7 @@ TARGET = pathfinder
 SRC_FILES = $(wildcard $(SRC_DIR)/*.c)
 LIBMX_SRC_FILES = $(wildcard $(LIBMX_SRC_DIR)/*.c)
 OBJ_FILES = $(SRC_FILES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
-LIBMX_OBJ_FILES = $(LIBMX_SRC_FILES:$(LIBMX_SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+LIBMX_OBJ_FILES = $(LIBMX_SRC_FILES:$(LIBMX_SRC_DIR)/%.c=$(LIBMX_OBJ_DIR)/%.o)
 
 # Правило для сборки программы
 all: $(TARGET)
@@ -36,8 +37,8 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -I$(INC_DIR) -I$(LIBMX_INC_DIR) -c $< -o $@
 
 # Компиляция объектных файлов для библиотеки
-$(OBJ_DIR)/%.o: $(LIBMX_SRC_DIR)/%.c
-	@mkdir -p $(OBJ_DIR)
+$(LIBMX_OBJ_DIR)/%.o: $(LIBMX_SRC_DIR)/%.c
+	@mkdir -p $(LIBMX_OBJ_DIR)
 	$(CC) $(CFLAGS) -I$(LIBMX_INC_DIR) -c $< -o $@
 
 # Очистка собранных файлов
@@ -51,5 +52,6 @@ fclean: clean
 # Пересобрать все с нуля
 re: fclean all
 
+# Запуск программы
 run:
 	./$(TARGET) ./path.txt
