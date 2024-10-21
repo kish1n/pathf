@@ -2,30 +2,30 @@
 
 int get_bridge_count(const char *filename) {
     int fd = open(filename, O_RDONLY);
-    if (fd == -1) {
-        write(2, "error: file [filename] does not exist\n", 32);
+    if (fd < 0) {
+        mx_printstr("error: file ");
+        mx_printstr((char *)filename);
+        mx_printstr(" does not exist\n");
         exit(1);
     }
 
-    char buffer[256];
-    int bytes_read = read(fd, buffer, 255);
-    if (bytes_read <= 0) {
-        write(2, "error: file [filename] is empty\n", 32);
-        close(fd);
-        exit(1);
-    }
-    buffer[bytes_read] = '\0';
-    close(fd);
+    char c;
+    while (read(fd, &c, 1) > 0 && c != '\n');
 
-    int number = 0;
-    for (int i = 0; buffer[i] != '\n' && buffer[i] != '\0'; i++) {
-        if (buffer[i] >= '0' && buffer[i] <= '9') {
-            number = number * 10 + (buffer[i] - '0');
+    int bridge_count = 0;
+    int line_started = 0;
+    while (read(fd, &c, 1) > 0) {
+        if (c == '\n') {
+            bridge_count++;
+            line_started = 0;
         } else {
-            write(2, "Error: invalid number format\n", 29);
-            exit(1);
+            line_started = 1;
         }
     }
+    if (line_started) {
+        bridge_count++;
+    }
 
-    return number;
+    close(fd);
+    return bridge_count;
 }

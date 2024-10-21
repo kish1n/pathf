@@ -2,7 +2,7 @@
 
 int main(const int argc, char *argv[]) {
     if (argc != 2) {
-        mx_printstr("Usage: ./pathfinder [filename]\n");
+        mx_printstr("usage: ./pathfinder [filename]\n");
         return 1;
     }
 
@@ -24,6 +24,11 @@ int main(const int argc, char *argv[]) {
         }
     }
 
+    if (current_island_count != island_count) {
+        mx_printstr("error: invalid number of islands\n");
+        exit(1);
+    }
+
     for (int i = 0; i < island_count; i++) {
         for (int j = i + 1; j < island_count; j++) {
             if (mx_strcmp(islands[i], islands[j]) > 0) {
@@ -40,30 +45,47 @@ int main(const int argc, char *argv[]) {
             for (int k = 0; k < result_array.count; k++) {
                 Result res = result_array.results[k];
 
-                printf("=======================================\n");
-                printf("Path: %s -> %s\n", res.path[0], res.path[res.length - 1]);
-                printf("Route: ");
+                mx_printstr("=======================================\n");
+                mx_printstr("Path: ");
+                mx_printstr(res.path[0]);
+                mx_printstr(" -> ");
+                mx_printstr(res.path[res.length - 1]);
+                mx_printstr("\n");
+                mx_printstr("Route: ");
                 for (int l = 0; l < res.length; l++) {
-                    printf("%s", res.path[l]);
+                    mx_printstr(res.path[l]);
                     if (l < res.length - 1)
-                        printf(" -> ");
+                        mx_printstr(" -> ");
                 }
-                printf("\nDistance: ");
+                mx_printstr("\nDistance: ");
                 int sum = 0;
                 for (int l = 0; l < res.length - 1; l++) {
-                    printf("%d", res.distances[l]);
+                    char *dist_str = mx_itoa(res.distances[l]);
+                    mx_printstr(dist_str);
+                    free(dist_str);
                     sum += res.distances[l];
                     if (l < res.length - 2)
-                        printf(" + ");
+                        mx_printstr(" + ");
                 }
                 if (res.length > 2) {
-                    printf(" = %d\n", sum);
+                    mx_printstr(" = ");
+                    char *sum_str = mx_itoa(sum);
+                    mx_printstr(sum_str);
+                    free(sum_str);
+                    mx_printstr("\n");
                 } else if (res.length == 2) {
-                    printf(" = %d\n", sum);
+                    mx_printstr(" = ");
+                    char *sum_str = mx_itoa(sum);
+                    mx_printstr(sum_str);
+                    free(sum_str);
+                    mx_printstr("\n");
                 } else {
-                    printf("%d\n", sum);
+                    char *sum_str = mx_itoa(sum);
+                    mx_printstr(sum_str);
+                    free(sum_str);
+                    mx_printstr("\n");
                 }
-                printf("=======================================\n");
+                mx_printstr("=======================================\n");
             }
 
             free_results(result_array);

@@ -1,7 +1,7 @@
 #include "../inc/pathfinder.h"
 
 void dijkstra(Bridge *bridges, int bridge_count, char *islands[], int island_count, int start_index, int *distances) {
-    bool *visited = (bool *)malloc(island_count * sizeof(bool));
+    bool *visited = (bool *)malloc(island_count * 2);
 
     for (int i = 0; i < island_count; i++) {
         distances[i] = INT_MAX;

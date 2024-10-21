@@ -4,15 +4,15 @@ ResultArray get_all_shortest_paths(Bridge *bridges, int bridge_count, char *isla
     int start_index = get_island_index(start, islands, island_count);
     int end_index = get_island_index(end, islands, island_count);
 
-    int *distances = (int *)malloc(island_count * sizeof(int));
+    int *distances = (int *)malloc(island_count * 4);
     dijkstra(bridges, bridge_count, islands, island_count, start_index, distances);
 
     ResultArray result_array;
-    result_array.results = (Result *)malloc(MAX_RESULTS * sizeof(Result));
+    result_array.results = (Result *)malloc(MAX_RESULTS * 24);
     result_array.count = 0;
 
-    int *temp_path = (int *)malloc(island_count * sizeof(int));
-    int *temp_distances = (int *)malloc(island_count * sizeof(int));
+    int *temp_path = (int *)malloc(island_count * 4);
+    int *temp_distances = (int *)malloc(island_count * 4);
 
     find_paths(
         start_index,

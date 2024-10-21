@@ -52,4 +52,4 @@ fclean: clean
 re: fclean all
 
 run:
-	make
+	./$(TARGET) ./path.txt

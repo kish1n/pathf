@@ -26,13 +26,13 @@ void find_paths(
         new_result.total_distance = total_distance;
 
         // Allocate memory for path (array of strings)
-        new_result.path = (char **)malloc(path_len * sizeof(char *));
+        new_result.path = (char **)malloc(path_len * 8);
         for (int i = 0; i < path_len; i++) {
             new_result.path[i] = mx_strdup(islands[temp_path[i]]);
         }
 
         // Allocate memory for distances
-        new_result.distances = (int *)malloc(dist_len * sizeof(int));
+        new_result.distances = (int *)malloc(dist_len * 4);
         for (int i = 0; i < dist_len; i++) {
             new_result.distances[i] = temp_distances[i];
         }

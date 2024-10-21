@@ -1,10 +1,11 @@
 #include "../inc/pathfinder.h"
 
-bool is_island_unique(const char *island, char *island_array[], int count) {
+bool is_island_unique(char *island, char **islands, int count) {
     for (int i = 0; i < count; i++) {
-        if (mx_strcmp(island_array[i], island) == 0) {
+        if (mx_strcmp(island, islands[i]) == 0) {
             return false;
         }
     }
     return true;
 }
+
