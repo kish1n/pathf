@@ -45,7 +45,7 @@ int main(const int argc, char *argv[]) {
             for (int k = 0; k < result_array.count; k++) {
                 Result res = result_array.results[k];
 
-                mx_printstr("=======================================\n");
+                mx_printstr("========================================\n");
                 mx_printstr("Path: ");
                 mx_printstr(res.path[0]);
                 mx_printstr(" -> ");
@@ -73,19 +73,10 @@ int main(const int argc, char *argv[]) {
                     mx_printstr(sum_str);
                     free(sum_str);
                     mx_printstr("\n");
-                } else if (res.length == 2) {
-                    mx_printstr(" = ");
-                    char *sum_str = mx_itoa(sum);
-                    mx_printstr(sum_str);
-                    free(sum_str);
-                    mx_printstr("\n");
                 } else {
-                    char *sum_str = mx_itoa(sum);
-                    mx_printstr(sum_str);
-                    free(sum_str);
                     mx_printstr("\n");
                 }
-                mx_printstr("=======================================\n");
+                mx_printstr("========================================\n");
             }
 
             free_results(result_array);
