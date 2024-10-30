@@ -14,6 +14,7 @@ LIBMX_OBJ_DIR = $(OBJ_DIR)/libmx
 LIB_NAME = libmx.a
 TARGET = pathfinder
 
+
 # Находим все .c файлы и превращаем их в объектные файлы
 SRC_FILES = $(wildcard $(SRC_DIR)/*.c)
 LIBMX_SRC_FILES = $(wildcard $(LIBMX_SRC_DIR)/*.c)
