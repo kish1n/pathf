@@ -9,11 +9,10 @@ Bridge *get_bridges(const char *filename, int *bridge_count) {
         exit(1);
     }
 
-    // Пропускаем первую строку (число островов)
     char c;
     while (read(fd, &c, 1) > 0 && c != '\n');
 
-    Bridge *bridges = (Bridge *)malloc((*bridge_count) * 24); // Используем 24 байта на каждый Bridge
+    Bridge *bridges = (Bridge *)malloc((*bridge_count) * 24);
     if (!bridges) {
         mx_printstr("error: memory allocation failed\n");
         close(fd);
@@ -22,7 +21,7 @@ Bridge *get_bridges(const char *filename, int *bridge_count) {
 
     char line[256];
     int index = 0;
-    int line_number = 2; // Начинаем с 2, так как первую строку пропустили
+    int line_number = 2;
     int total_bridge_length = 0;
 
     int bridge_index = 0;
@@ -30,18 +29,18 @@ Bridge *get_bridges(const char *filename, int *bridge_count) {
     while (1) {
         index = 0;
         while (read(fd, &c, 1) > 0 && c != '\n') {
-            if (index < 255) {
+            if (c != '\r' && index < 255) {
                 line[index++] = c;
             }
         }
         line[index] = '\0';
 
         if (index == 0 && c != '\n') {
-            break; // Конец файла
+            break;
         }
 
         if (index == 0) {
-            continue; // Пропускаем пустые строки
+            continue;
         }
 
         int delimiter1 = mx_get_char_index(line, '-');
@@ -77,7 +76,6 @@ Bridge *get_bridges(const char *filename, int *bridge_count) {
             exit(1);
         }
 
-        // Проверяем, что длина — положительное число
         for (int i = 0; distance_str[i]; i++) {
             if (!mx_isdigit(distance_str[i])) {
                 mx_printstr("error: line ");

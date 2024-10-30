@@ -15,13 +15,18 @@ int get_bridge_count(const char *filename) {
     int bridge_count = 0;
     int line_started = 0;
     while (read(fd, &c, 1) > 0) {
+        if (c == '\r') continue;
+
         if (c == '\n') {
-            bridge_count++;
-            line_started = 0;
+            if (line_started) {
+                bridge_count++;
+                line_started = 0;
+            }
         } else {
             line_started = 1;
         }
     }
+
     if (line_started) {
         bridge_count++;
     }
