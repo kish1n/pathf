@@ -1,7 +1,7 @@
 #ifndef PATHFINDER_H
 #define PATHFINDER_H
 
-#include "libmx.h"
+#include "../libmx/inc/libmx.h"
 #include <limits.h>
 
 typedef struct {
