@@ -7,11 +7,8 @@ int main(const int argc, char *argv[]) {
     }
 
     int bridge_count = get_bridge_count(argv[1]);
-    printf("bridge_count: %d\n", bridge_count);
     Bridge *bridges = get_bridges(argv[1], &bridge_count);
-    printf("success get bridges\n");
     int island_count = get_island_count(argv[1]);
-    printf("island_count: %d\n", island_count);
     char *islands[island_count];
     int current_island_count = 0;
 
@@ -19,14 +16,11 @@ int main(const int argc, char *argv[]) {
         if (is_island_unique(bridges[i].island1, islands, current_island_count)) {
             islands[current_island_count] = mx_strdup(bridges[i].island1);
             current_island_count++;
-            printf("island1: %s\n", bridges[i].island1);
         }
         if (is_island_unique(bridges[i].island2, islands, current_island_count)) {
             islands[current_island_count] = mx_strdup(bridges[i].island2);
             current_island_count++;
-            printf("island2: %s\n", bridges[i].island2);
         }
-        printf("current_island_count: %d\n", current_island_count);
     }
 
     if (current_island_count != island_count) {
@@ -37,17 +31,12 @@ int main(const int argc, char *argv[]) {
     for (int i = 0; i < island_count; i++) {
         for (int j = i + 1; j < island_count; j++) {
             if (mx_strcmp(islands[i], islands[j]) > 0) {
-                printf("islands[i]: %s\n", islands[i]);
-                printf("islands[j]: %s\n", islands[j]);
-                printf("mx_strcmp: %d\n", mx_strcmp(islands[i], islands[j]));
                 char *temp = islands[i];
                 islands[i] = islands[j];
                 islands[j] = temp;
             }
         }
     }
-
-
 
     for (int i = 0; i < island_count; i++) {
         for (int j = i + 1; j < island_count; j++) {
@@ -97,10 +86,6 @@ int main(const int argc, char *argv[]) {
         free(islands[i]);
     }
 
-    for (int i = 0; i < bridge_count; i++) {
-        free(bridges[i].island1);
-        free(bridges[i].island2);
-    }
     free(bridges);
 
     return 0;
