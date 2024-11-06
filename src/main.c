@@ -6,7 +6,7 @@ int main(const int argc, char *argv[]) {
         return 1;
     }
 
-    int bridge_count = get_bridge_count(argv[1]);
+    int bridge_count = get_bridge_count(argv[1]); //good
     Bridge *bridges = get_bridges(argv[1], &bridge_count);
     int island_count = get_island_count(argv[1]);
     char *islands[island_count];
