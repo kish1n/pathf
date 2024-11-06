@@ -12,7 +12,7 @@ Bridge *get_bridges(const char *filename, int *bridge_count) {
     char c;
     while (read(fd, &c, 1) > 0 && c != '\n'); // Пропуск первой строки
 
-    Bridge *bridges = (Bridge *)malloc((*bridge_count) * 20);
+    Bridge *bridges = (Bridge *)malloc((*bridge_count) * 24);
     if (!bridges) {
         mx_printstr("error: memory allocation failed\n");
         close(fd);
@@ -47,10 +47,6 @@ Bridge *get_bridges(const char *filename, int *bridge_count) {
             free(line_num_str);
             mx_printstr(" is not valid\n");
             close(fd);
-            for (int j = 0; j < bridge_index; j++) {
-                free(bridges[j].island1);
-                free(bridges[j].island2);
-            }
             free(bridges);
             exit(1);
         }
@@ -59,6 +55,7 @@ Bridge *get_bridges(const char *filename, int *bridge_count) {
         char *island2 = mx_strndup(line + delimiter1 + 1, delimiter2 - delimiter1 - 1);
         char *distance_str = mx_strdup(line + delimiter2 + 1);
 
+        // Проверка валидности названий островов
         if (!island1 || !island2 || mx_strlen(island1) == 0 || mx_strlen(island2) == 0) {
             mx_printstr("error: line ");
             char *line_num_str = mx_itoa(line_number);
