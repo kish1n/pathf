@@ -22,7 +22,6 @@ void dijkstra(Bridge *bridges, int bridge_count, char *islands[], int island_cou
             break;
         visited[current] = true;
 
-        // Update distances to neighbors
         for (int i = 0; i < bridge_count; i++) {
             int neighbor = -1;
             if (current == get_island_index(bridges[i].island1, islands, island_count)) {

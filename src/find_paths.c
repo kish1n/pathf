@@ -20,29 +20,24 @@ void find_paths(
     temp_path[path_len++] = current;
 
     if (current == end_index) {
-        // Create a new Result
         Result new_result;
         new_result.length = path_len;
         new_result.total_distance = total_distance;
 
-        // Allocate memory for path (array of strings)
         new_result.path = (char **)malloc(path_len * 8);
         for (int i = 0; i < path_len; i++) {
             new_result.path[i] = mx_strdup(islands[temp_path[i]]);
         }
 
-        // Allocate memory for distances
         new_result.distances = (int *)malloc(dist_len * 4);
         for (int i = 0; i < dist_len; i++) {
             new_result.distances[i] = temp_distances[i];
         }
 
-        // Add to results array
         if (*result_count < max_results) {
             results[*result_count] = new_result;
             (*result_count)++;
         } else {
-            // Free allocated memory if we cannot add more results
             for (int i = 0; i < path_len; i++) {
                 free(new_result.path[i]);
             }
@@ -51,7 +46,6 @@ void find_paths(
             return;
         }
     } else {
-        // Explore neighbors
         for (int i = 0; i < bridge_count; i++) {
             int neighbor = -1;
             int edge_weight = bridges[i].distance;
@@ -62,7 +56,6 @@ void find_paths(
             }
             if (neighbor != -1) {
                 if (distances[current] + edge_weight == distances[neighbor]) {
-                    // Add to temp_distances
                     temp_distances[dist_len++] = edge_weight;
                     total_distance += edge_weight;
 
@@ -84,13 +77,12 @@ void find_paths(
                         islands
                     );
 
-                    // Backtrack
                     dist_len--;
                     total_distance -= edge_weight;
                 }
             }
         }
     }
-    path_len--;  // Backtrack current node
+    path_len--;
 }
 

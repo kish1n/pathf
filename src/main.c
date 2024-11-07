@@ -16,12 +16,10 @@ int main(const int argc, char *argv[]) {
         if (is_island_unique(bridges[i].island1, islands, current_island_count)) {
             islands[current_island_count] = mx_strdup(bridges[i].island1);
             current_island_count++;
-            printf("add %s\n", bridges[i].island1);
         }
         if (is_island_unique(bridges[i].island2, islands, current_island_count)) {
             islands[current_island_count] = mx_strdup(bridges[i].island2);
             current_island_count++;
-            printf("add %s\n", bridges[i].island2);
         }
     }
 

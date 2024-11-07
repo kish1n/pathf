@@ -10,7 +10,7 @@ Bridge *get_bridges(const char *filename, int *bridge_count) {
     }
 
     char c;
-    while (read(fd, &c, 1) > 0 && c != '\n'); // Пропуск первой строки
+    while (read(fd, &c, 1) > 0 && c != '\n');
 
     Bridge *bridges = (Bridge *)malloc((*bridge_count) * 24);
     if (!bridges) {
